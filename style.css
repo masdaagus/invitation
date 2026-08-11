@@ -24,7 +24,7 @@ img{max-width:100%;display:block}
 /* Fixed parallax bg — ref 73d318e */
 .fixed-bg{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:url(assets/photos/CSA_5451.webp) center/cover no-repeat;
+  background:url(assets/photos/CSA_5713.webp) center/cover no-repeat;
 }
 .invite{
   position:relative;z-index:1;
