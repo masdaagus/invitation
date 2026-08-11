@@ -2,6 +2,7 @@
 const guest = new URLSearchParams(location.search).get('guest') || new URLSearchParams(location.search).get('kepada') || 'Salindri';
 document.querySelector('#guestName').textContent = guest;
 document.querySelectorAll('[data-guest]').forEach((el) => { el.textContent = guest; });
+document.querySelector('.wish-form input[name="nama"]').value = guest;
 
 /* ===== Cover slideshow — Elementor-like fade + Ken Burns =====
    slide_duration: 1250ms hold after transition
@@ -125,6 +126,76 @@ function showToast(text) {
   showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
 }
 window.showToast = showToast;
+
+/* ===== RSVP + Wishes (Supabase) =====
+   ponytail: anon key di-fetch dari .env via HTTP — works on static hosting
+   yang serve dotfile (python http.server, dll). Kalau fetch gagal (file://
+   atau host blokir dotfile), RSVP mati diam-diam. Upgrade path: inject key
+   via build/deploy step.
+*/
+const wishList = document.querySelector('#wishList');
+const rsvpForm = document.querySelector('#rsvpForm');
+let supabaseClient = null;
+
+function addWishItem({ nama, ucapan }) {
+  const item = document.createElement('div');
+  item.className = 'wish-item';
+  const strong = document.createElement('strong');
+  strong.textContent = nama;
+  const span = document.createElement('span');
+  span.textContent = ucapan;
+  item.append(strong, span);
+  wishList.prepend(item);
+  while (wishList.children.length > 6) wishList.lastChild.remove();
+}
+
+async function initRsvp() {
+  try {
+    const env = Object.fromEntries(
+      (await (await fetch('.env')).text()).split('\n')
+        .filter((line) => line.includes('='))
+        .map((line) => line.split('=').map((s) => s.trim()))
+    );
+    // if (!env.SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY.includes('tempel')) return;
+    supabaseClient = supabase.createClient("https://xsabqeuxmokwcthokfwz.supabase.co", "sb_publishable_WAm14zb2mQyOFxjAijqYDg_C_xP9-Lf");
+
+    const { data, error } = await supabaseClient
+      .from('rsvp')
+      .select('nama, ucapan')
+      .order('created_at', { ascending: false })
+      .limit(6);
+    if (error) throw error;
+    data.reverse().forEach(addWishItem);
+  } catch {
+    /* .env tidak terjangkau atau Supabase down — biarkan form tanpa storage */
+  }
+}
+
+rsvpForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!supabaseClient) {
+    showToast('RSVP belum aktif');
+    return;
+  }
+  const row = {
+    nama: rsvpForm.nama.value.trim(),
+    ucapan: rsvpForm.ucapan.value.trim(),
+    kehadiran: rsvpForm.kehadiran.value,
+  };
+  const button = rsvpForm.querySelector('button');
+  button.disabled = true;
+  const { error } = await supabaseClient.from('rsvp').insert(row);
+  button.disabled = false;
+  if (error) {
+    showToast('Gagal menyimpan, coba lagi');
+    return;
+  }
+  addWishItem(row);
+  rsvpForm.ucapan.value = '';
+  showToast('Terima kasih atas konfirmasinya');
+});
+
+initRsvp();
 document.querySelectorAll('[data-copy]').forEach((button) => {
   button.addEventListener('click', async () => {
     await navigator.clipboard.writeText(button.dataset.copy);
@@ -134,26 +205,40 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
 
 /* ===== Gallery 9:16 grid ===== */
 const gallery = [
-  'NFL00024', 'NFL00028', 'NFL00245', 'NFL00466', 'NFL00481',
-  'NFL00484', 'NFL00495', 'NFL00511', 'NFL00543', 'NFL00593',
-  'NFL00611', 'NFL00660', 'NFL00675', 'NFL00703', 'NFL00718'
-].map((name) => `https://xsabqeuxmokwcthokfwz.supabase.co/storage/v1/object/public/wedding/salindri/${name}.webp`);
+  'CSA_5451', 'CSA_5457', 'CSA_5462', 'CSA_5464', 'CSA_5468',
+  'CSA_5475', 'CSA_5487', 'CSA_5491', 'CSA_5496', 'CSA_5501',
+  'CSA_5510', 'CSA_5511', 'CSA_5518', 'CSA_5521', 'CSA_5540'
+].map((name) => `assets/photos/${name}.webp`);
 const galleryGrid = document.querySelector('#galleryGrid');
 const lightbox = document.querySelector('#lightbox');
 const lightboxImage = lightbox.querySelector('img');
+const lightboxCounter = document.querySelector('#lightboxCounter');
+let currentIndex = 0;
+function showSlide(index) {
+  currentIndex = (index + gallery.length) % gallery.length;
+  lightboxImage.src = gallery[currentIndex];
+  lightboxCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
+}
 gallery.forEach((src, index) => {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'anim zoom-in slow';
   button.innerHTML = `<img src="${src}" alt="Gallery ${index + 1}" loading="lazy">`;
   button.addEventListener('click', () => {
-    lightboxImage.src = src;
+    showSlide(index);
     lightbox.showModal();
+    new Image().src = gallery[(index + 1) % gallery.length];
   });
   galleryGrid.append(button);
 });
 document.querySelector('#closeLightbox').addEventListener('click', () => lightbox.close());
+document.querySelector('#prevLightbox').addEventListener('click', () => showSlide(currentIndex - 1));
+document.querySelector('#nextLightbox').addEventListener('click', () => showSlide(currentIndex + 1));
 lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
+lightbox.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft') showSlide(currentIndex - 1);
+  if (event.key === 'ArrowRight') showSlide(currentIndex + 1);
+});
 
 /* ===== Entrance animations — WeddingPress wdpal style =====
    class .anim + direction; add .active on intersect

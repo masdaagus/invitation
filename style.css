@@ -24,7 +24,7 @@ img{max-width:100%;display:block}
 /* Fixed parallax bg — ref 73d318e */
 .fixed-bg{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:url(https://xsabqeuxmokwcthokfwz.supabase.co/storage/v1/object/public/wedding/salindri/NFL00245.webp) center/cover no-repeat;
+  background:url(assets/photos/CSA_5451.webp) center/cover no-repeat;
 }
 .invite{
   position:relative;z-index:1;
@@ -229,7 +229,7 @@ img{max-width:100%;display:block}
 }
 .event-card .btn{margin-top:14px}
 
-/* ===== STREAM / RSVP — #000000BA ===== */
+/* ===== STREAM — #000000BA ===== */
 .stream{
   gap:16px;
   background:rgba(0,0,0,.73);
@@ -239,7 +239,6 @@ img{max-width:100%;display:block}
   width:100%;margin:4px 0 8px;border-radius:0;overflow:hidden;
 }
 .live-photo img{width:100%;height:auto;object-fit:cover}
-.rsvp-title{margin-top:36px;font-size:35px}
 .stream form,.wish-form{
   display:flex;flex-direction:column;gap:12px;text-align:left;width:100%;
 }
@@ -247,12 +246,10 @@ img{max-width:100%;display:block}
   display:flex;flex-direction:column;gap:6px;
   font:300 13px var(--body);
 }
-.stream input,.stream select,.wish-form input,.wish-form textarea{
+.stream input,.stream select,.wish-form input,.wish-form select,.wish-form textarea{
   width:100%;padding:10px 12px;border:1px solid rgba(255,255,255,.35);
   border-radius:6px;background:rgba(0,0,0,.35);color:var(--white);
 }
-.checks{display:flex;gap:18px;font:300 14px var(--body)}
-.checks label{flex-direction:row;align-items:center;gap:6px}
 
 /* ===== GIFT — #000000BF ===== */
 .gift{gap:16px;background:rgba(0,0,0,.75)}
@@ -273,26 +270,22 @@ img{max-width:100%;display:block}
   background:transparent;color:var(--white);cursor:pointer;
 }
 
-/* ===== GALLERY — 9:16-ish, 3 col, gap 15 (ref e-gallery) ===== */
+/* ===== GALLERY — masonry 2 col, gap 10 (ref Elegant-4 e-gallery) ===== */
 .gallery{background:rgba(0,0,0,.39);padding:50px 20px}
 .gallery-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:15px;margin-top:18px;
+  columns:2;column-gap:10px;margin-top:18px;
 }
 .gallery-grid button{
-  position:relative;padding:0;border:0;border-radius:10px;
+  position:relative;display:block;width:100%;padding:0;border:0;border-radius:4px;
   overflow:hidden;background:transparent;cursor:pointer;
-  aspect-ratio:9/16;
+  margin-bottom:10px;break-inside:avoid;
 }
 .gallery-grid img{
-  width:100%;height:100%;object-fit:cover;
-  transition:transform .8s ease;
-  transform-origin:center center;
+  display:block;width:100%;height:auto;
 }
-.gallery-grid button:hover img{transform:scale(.92)}
 .gallery-grid button::after{
   content:"";position:absolute;inset:0;
-  background:rgba(0,0,0,0);transition:background .8s;
+  background:rgba(0,0,0,0);transition:background .5s;
 }
 .gallery-grid button:hover::after{background:rgba(0,0,0,.5)}
 
@@ -329,7 +322,7 @@ img{max-width:100%;display:block}
   min-height:70vh;
   background:
     linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.9)),
-    url(https://xsabqeuxmokwcthokfwz.supabase.co/storage/v1/object/public/wedding/salindri/NFL00511.webp) center/cover;
+    url(assets/photos/CSA_5554.webp) center/cover;
   gap:16px;
 }
 .closing .section-title{margin-bottom:8px}
@@ -353,10 +346,10 @@ img{max-width:100%;display:block}
   position:relative;z-index:1;
 }
 .anim.active{opacity:1}
-.anim.slow{transition-duration:2s}
-.anim.very-slow{transition-duration:3s}
+.anim.slow{transition-duration:1s}
+.anim.very-slow{transition-duration:2s}
 
-.anim.muncul-atas{transform:translateY(50px);transition-delay:.3s}
+.anim.muncul-atas{transform:translateY(50px);transition-delay:.15s}
 .anim.muncul-atas.active{transform:translateY(0)}
 
 .anim.muncul-bawah{transform:translateY(-50px);transition-delay:.3s}
@@ -383,9 +376,18 @@ img{max-width:100%;display:block}
 }
 #lightbox::backdrop{background:rgba(0,0,0,.88)}
 #lightbox img{max-width:92vw;max-height:88vh;object-fit:contain;border-radius:6px}
-#closeLightbox{
-  position:fixed;top:12px;right:16px;z-index:10;
-  border:0;background:transparent;color:#fff;font-size:32px;cursor:pointer;
+#lightbox button{
+  position:fixed;z-index:10;border:0;background:transparent;color:#fff;cursor:pointer;
+}
+#closeLightbox{top:12px;right:16px;font-size:32px}
+#prevLightbox,#nextLightbox{
+  top:50%;transform:translateY(-50%);font-size:56px;line-height:1;padding:8px 14px;
+}
+#prevLightbox{left:8px}
+#nextLightbox{right:8px}
+#lightboxCounter{
+  position:fixed;top:20px;left:18px;z-index:10;
+  color:#fff;font:300 14px var(--body);opacity:.8;
 }
 .toast{
   position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
@@ -401,5 +403,4 @@ img{max-width:100%;display:block}
   .event-card h3{font-size:28px}
   .countdown strong{font-size:28px}
   .carousel-track img{width:calc((100vw - 50px) / 2);max-width:none}
-  .gallery-grid{gap:12px}
 }
