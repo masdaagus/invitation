@@ -147,7 +147,7 @@ img{max-width:100%;display:block}
   display:flex;flex-direction:column;align-items:center;gap:20px;
   width:100%;padding:50px 25px;border-radius:10px;
 }
-.couple .person{display:flex;flex-direction:column;align-items:center;gap:10px}
+.couple .person{display:flex;flex-direction:column;align-items:center;gap:12px}
 /* THE GROOM / THE BRIDE — Ovo 35px weight 300 (ref) */
 .person-label{
   margin:0;
@@ -156,7 +156,7 @@ img{max-width:100%;display:block}
 }
 /* photo max-width 75%, radius 12px (ref 760c9489) */
 .couple .portrait{
-  width:min(75%,308px);aspect-ratio:2/3;
+  width:min(90%,308px);aspect-ratio:2/3;
   overflow:hidden;border-radius:12px;
 }
 .couple .portrait img{width:100%;height:100%;object-fit:cover}
@@ -213,7 +213,7 @@ img{max-width:100%;display:block}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .event-photo{
-  width:158px;min-width:140px;height:200px;object-fit:cover;
+  width:138px;min-width:120px;height:200px;object-fit:cover;
   border-radius:10px;flex-shrink:0;
 }
 .event-body{flex:1;min-width:0;text-align:left}
@@ -291,20 +291,25 @@ img{max-width:100%;display:block}
 
 /* ===== JOURNEY — foto + text row (ref phase wdpblur) ===== */
 .journey{background:rgba(0,0,0,.39);gap:16px}
-.timeline{display:flex;flex-direction:column;gap:16px;width:100%}
+/* 2 foto arch overlap (ref Elegant-4 "Love Story": radius 150px, neg margin -165px) */
+.journey-photos{width:100%;overflow:hidden}
+.journey-photos img{display:block;height:auto;box-shadow:0 0 10px rgba(0,0,0,.5)}
+.jp1{width:calc(100% - 26px);margin-right:26px;border-radius:0 150px 0 0}
+.jp2{width:calc(100% - 73px);margin:-165px 0 0 73px;border:5px solid rgba(0,0,0,.39);border-radius:150px 0 0 0}
+.timeline{display:flex;flex-direction:column;gap:12px;width:100%}
 .phase{
   display:flex;flex-direction:row;align-items:center;gap:15px;
-  padding:20px;border-radius:10px;text-align:left;
+  padding:12px;border-radius:10px;text-align:left;
   background:rgba(0,0,0,.2);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .phase-photo{
-  width:174px;min-width:140px;height:280px;object-fit:cover;
-  border-radius:15px;flex-shrink:0;
+  width:35%;min-width:10px;height:20%;object-fit:cover;
+  border-radius:8px;flex-shrink:0;
 }
 .phase-body{flex:1;min-width:0}
 .phase h3{margin:0 0 8px;font:600 16px/16px var(--ovo)}
-.phase p{margin:0;font:400 14px/25px var(--ovo);opacity:.95}
+.phase p{margin:0;font:400 12px/22px var(--ovo);opacity:.95}
 
 /* ===== WISHES ===== */
 .wishes{gap:14px;background:rgba(0,0,0,.73)}
@@ -403,4 +408,6 @@ img{max-width:100%;display:block}
   .event-card h3{font-size:28px}
   .countdown strong{font-size:28px}
   .carousel-track img{width:calc((100vw - 50px) / 2);max-width:none}
+  .journey-photos{width:80%;margin:0 auto}
+  .jp2{margin-top:-140px}
 }
