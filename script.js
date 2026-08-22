@@ -206,9 +206,16 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
 /* ===== Gallery 9:16 grid ===== */
 
 const gallery = [
-  'CSA_5451', 'CSA_5462',
-  'CSA_5475', 'CSA_5491', 'CSA_5501',
-  'CSA_5554', 'CSA_5518', 'CSA_5491', 'CSA_5540', 'CSA_5518'
+  'CSA_5462', 'CSA_5474',
+  'CSA_5503', 'CSA_5468', 
+  'CSA_5539', 'CSA_5554', 
+  'CSA_5725', 'CSA_5575', 
+  'CSA_5587', 'CSA_5646',
+  'CSA_5679', 'CSA_5672',
+  'CSA_5643', 'CSA_5716',
+  'CSA_5734', 'NFL00479',
+  'NFL00510', 'NFL00497',
+  'NFL00461', 'NFL00034',
 ].map((name) => `assets/photos/${name}.webp`);
 const galleryGrid = document.querySelector('#galleryGrid');
 const lightbox = document.querySelector('#lightbox');

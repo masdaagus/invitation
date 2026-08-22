@@ -304,7 +304,7 @@ img{max-width:100%;display:block}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .phase-photo{
-  width:35%;min-width:10px;height:20%;object-fit:cover;
+  width:25%;min-width:10px;height:20%;object-fit:cover;
   border-radius:8px;flex-shrink:0;
 }
 .phase-body{flex:1;min-width:0}
