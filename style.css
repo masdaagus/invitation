@@ -229,6 +229,11 @@ html.lock,html.lock body{overflow:hidden;height:100%}
   font:300 16px/16px var(--ovo);
   letter-spacing:-.2px;
 }
+.event-card p.event-address{
+  margin:20px 0 0 0;
+  font-size:14px;
+  line-height:12px;
+}
 .event-card .btn{margin-top:14px}
 
 /* ===== STREAM — #000000BA ===== */
@@ -272,15 +277,14 @@ html.lock,html.lock body{overflow:hidden;height:100%}
   background:transparent;color:var(--white);cursor:pointer;
 }
 
-/* ===== GALLERY — masonry 2 col, gap 10 (ref Elegant-4 e-gallery) ===== */
+/* ===== GALLERY — grid 2 col, gap 10 (ref Elegant-4 e-gallery) ===== */
 .gallery{background:rgba(0,0,0,.39);padding:50px 20px}
 .gallery-grid{
-  columns:2;column-gap:10px;margin-top:18px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px;
 }
 .gallery-grid button{
   position:relative;display:block;width:100%;padding:0;border:0;border-radius:4px;
   overflow:hidden;background:transparent;cursor:pointer;
-  margin-bottom:10px;break-inside:avoid;
 }
 .gallery-grid img{
   display:block;width:100%;height:auto;
