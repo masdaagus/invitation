@@ -203,6 +203,74 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
   });
 });
 
+/* ===== Background music — mulai hanya via LET'S ROLL =====
+   Autoplay audio diblokir Chrome/Safari/iOS, jadi lagu hanya mulai
+   dari gestur user: klik LET'S ROLL (unlock). Loop terus; floating
+   button kanan-bawah untuk pause/resume setelah masuk.
+*/
+const bgMusic = document.querySelector('#bgMusic');
+const musicToggle = document.querySelector('#musicToggle');
+
+function startMusic() {
+  musicToggle.hidden = false;
+  if (!bgMusic) return;
+  bgMusic.volume = 0.6;
+  const tryPlay = () => {
+    bgMusic.play().then(() => {
+      musicToggle.setAttribute('aria-pressed', 'true');
+      musicToggle.setAttribute('aria-label', 'Jeda musik latar');
+    }).catch(() => { /* blokir sementara — biar tombol yang mulai */ });
+  };
+  tryPlay();
+  bgMusic.addEventListener('pause', () => {
+    musicToggle.setAttribute('aria-pressed', 'false');
+    musicToggle.setAttribute('aria-label', 'Putar musik latar');
+  });
+  musicToggle.addEventListener('click', () => {
+    if (bgMusic.paused) tryPlay();
+    else bgMusic.pause();
+  });
+}
+
+/* ===== Cover gate — scroll & musik terkunci sampai LET'S ROLL =====
+   html.lock dipasang saat load: wheel/touch/keyboard navigasi di-jepit.
+   Klik #rollBtn → unlock(): hapus lock, smooth-scroll ke #opening,
+   lalu startMusic(). Satu-satunya pintu masuk musik.
+*/
+const rootEl = document.documentElement;
+const rollBtn = document.querySelector('#rollBtn');
+const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar']);
+
+rootEl.classList.add('lock');
+window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+function onWheel(e) { e.preventDefault(); }
+function onTouchMove(e) { e.preventDefault(); }
+function onKeyScroll(e) {
+  if (e.target.closest && e.target.closest('#rollBtn')) return;
+  if (SCROLL_KEYS.has(e.key)) e.preventDefault();
+}
+
+window.addEventListener('wheel', onWheel, { passive: false });
+window.addEventListener('touchmove', onTouchMove, { passive: false });
+window.addEventListener('keydown', onKeyScroll);
+
+function unlock() {
+  if (!rootEl.classList.contains('lock')) return;
+  rootEl.classList.remove('lock');
+  window.removeEventListener('wheel', onWheel);
+  window.removeEventListener('touchmove', onTouchMove);
+  window.removeEventListener('keydown', onKeyScroll);
+  document.querySelector('#opening').scrollIntoView({ behavior: 'smooth' });
+  startMusic();
+}
+
+rollBtn?.addEventListener('click', (event) => {
+  event.preventDefault();
+  unlock();
+});
+
+
 /* ===== Gallery 9:16 grid ===== */
 
 const gallery = [
