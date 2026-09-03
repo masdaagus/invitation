@@ -31,6 +31,8 @@ img{max-width:100%;display:block}
   width:min(100%,500px);margin:0 auto;
   background:transparent;overflow:hidden;
 }
+/* Cover lock — freeze page until LET'S ROLL (ref cover gate) */
+html.lock,html.lock body{overflow:hidden;height:100%}
 
 /* Shared */
 .section{
@@ -400,6 +402,40 @@ img{max-width:100%;display:block}
   font:300 13px var(--body);opacity:0;pointer-events:none;transition:.3s;z-index:50;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Music floating button — bottom-right glass pill */
+.music-btn{
+  position:fixed;right:16px;bottom:24px;z-index:40;
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.5);
+  background:rgba(0,0,0,.5);color:var(--white);cursor:pointer;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:opacity .3s,transform .3s;
+}
+.music-btn[hidden]{display:none}
+.music-btn:hover{opacity:.88;transform:translateY(-1px)}
+.music-btn[aria-pressed="true"]{border-color:var(--white)}
+
+/* Equalizer bars (playing) */
+.eq{display:flex;align-items:flex-end;gap:3px;height:18px}
+.eq i{
+  width:4px;border-radius:2px;background:currentColor;
+  animation:eq-bounce 1s ease-in-out infinite;transform-origin:bottom;
+}
+.eq i:nth-child(1){height:60%;animation-duration:.7s}
+.eq i:nth-child(2){height:100%;animation-duration:.45s}
+.eq i:nth-child(3){height:75%;animation-duration:.9s}
+@keyframes eq-bounce{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+.music-btn:not([aria-pressed="true"]) .eq{animation-play-state:paused;opacity:.4}
+
+/* Pause bars (muted) */
+.eq-pause{display:none;gap:4px}
+.eq-pause i{width:4px;height:18px;border-radius:2px;background:currentColor}
+.music-btn[aria-pressed="true"] .eq{display:flex}
+.music-btn[aria-pressed="true"] .eq-pause{display:none}
+.music-btn:not([aria-pressed="true"]) .eq{display:none}
+.music-btn:not([aria-pressed="true"]) .eq-pause{display:flex}
 
 @media (max-width:500px){
   .cover-title{font-size:28px}

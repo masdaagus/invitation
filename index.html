@@ -12,7 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400&family=Ovo&family=Poltawski+Nowy:ital,wght@1,300&family=Public+Sans:wght@300;400&display=swap"
     rel="stylesheet">
   <link rel="preload" as="image" href="assets/photos/CSA_5451.webp">
-  <link rel="stylesheet" href="style.css?v=b8fb6186f4200f2744d3b957ed4fbb29a2c0ea87">
+  <link rel="stylesheet" href="style.css?v=1975f83">
 </head>
 
 <body>
@@ -45,7 +45,7 @@
           <span class="dear">DEAR,</span>
           <strong class="guest-name" id="guestName"></strong>
         </div>
-        <a class="btn anim muncul-atas slow" href="#opening">LET'S ROLL</a>
+        <button class="btn anim muncul-atas slow" id="rollBtn" type="button">LET'S ROLL</button>
       </div>
     </section>
 
@@ -280,8 +280,17 @@
     <button type="button" id="nextLightbox" aria-label="Foto berikutnya">›</button>
   </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <button class="music-btn" id="musicToggle" type="button" aria-label="Putar musik latar"
+    aria-pressed="false" hidden>
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="eq-pause" aria-hidden="true"><i></i><i></i></span>
+  </button>
+  <audio id="bgMusic" src="assets/song/Masa%20ini%2C%20Nanti%2C%20dan%20Masa%20Indah%20Lainnya.mp3"
+    preload="metadata" loop></audio>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js?v=b8fb6186f4200f2744d3b957ed4fbb29a2c0ea87"></script>
+  <script src="script.js?v=1975f82"></script>
 </body>
 
 </html>
