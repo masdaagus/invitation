@@ -276,11 +276,14 @@ rollBtn?.addEventListener('click', (event) => {
 const gallery = [
   'CSA_5462', 'CSA_5474',
   'CSA_5503', 'CSA_5468', 
+  'CSA_5457', 
   'CSA_5539', 'CSA_5554', 
-  'CSA_5725', 'CSA_5575', 
-  'CSA_5587', 'CSA_5716',
+  'CSA_5587', 'CSA_5575', 
+  'CSA_5496', 
   'CSA_5679', 'CSA_5672',
   'CSA_5643', 'CSA_5646',
+  'CSA_5731', 
+  'CSA_5725', 'CSA_5716',
   // 'CSA_5734', 'CSA_5646',
   // 'CSA_5554', 'CSA_5575',
   // 'CSA_5646', 'CSA_5672',
@@ -298,7 +301,7 @@ function showSlide(index) {
 gallery.forEach((src, index) => {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = 'anim zoom-in slow';
+  button.className = `anim zoom-in slow${index % 5 === 4 ? ' landscape' : ''}`;
   button.innerHTML = `<img src="${src}" alt="Gallery ${index + 1}" loading="lazy">`;
   button.addEventListener('click', () => {
     showSlide(index);
