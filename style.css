@@ -230,7 +230,8 @@ html.lock,html.lock body{overflow:hidden;height:100%}
   gap:18px;
 }
 .events .section-title{
-  font:500 35px/1 var(--ovo);
+  font:500 35px/1 "Poppins",sans-serif;
+  /* font:500 35px/1 var(--ovo); */
   text-transform:none;letter-spacing:0;
 }
 .countdown{
@@ -264,13 +265,16 @@ html.lock,html.lock body{overflow:hidden;height:100%}
 }
 .event-card p{
   margin:0 0 6px;
-  font:300 16px/16px var(--ovo);
+  font:400 14px/1.2 "Poppins",sans-serif;
+  /* font:300 16px/16px var(--ovo); */
   letter-spacing:-.2px;
 }
 .event-card p.event-address{
   margin:20px 0 0 0;
-  font-size:14px;
-  line-height:12px;
+  font:400 12px/1.2 "Poppins",sans-serif;
+  /* letter-spacing:.5px; */
+  /* font-size:14px;
+  line-height:12px; */
 }
 .event-card .btn{margin-top:14px}
 
@@ -353,7 +357,9 @@ html.lock,html.lock body{overflow:hidden;height:100%}
 }
 .phase-body{flex:1;min-width:0}
 .phase h3{margin:0 0 8px;font:600 16px/16px var(--ovo)}
-.phase p{margin:0;font:400 12px/22px var(--ovo);opacity:.95}
+.phase p{
+  margin:0;font:400 12px/22px var(--ovo);opacity:.95
+}
 
 /* ===== WISHES ===== */
 .wishes{gap:14px;background:rgba(0,0,0,.73)}
