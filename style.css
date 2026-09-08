@@ -68,9 +68,14 @@ html.lock,html.lock body{overflow:hidden;height:100%}
 
 /* ===== COVER ===== */
 .cover{
-  position:relative;min-height:100vh;
-  display:flex;align-items:flex-end;justify-content:center;
-  padding:50px 25px 75px;text-align:center;overflow:hidden;
+  position:relative;
+  height:100vh;
+  height:100svh;
+  display:flex;
+  justify-content:center;
+  padding:0 25px;
+  text-align:center;
+  overflow:hidden;
   background:#000;
 }
 .cover-slideshow,.cover-slideshow .slide,.veil{position:absolute;inset:0}
@@ -88,36 +93,69 @@ html.lock,html.lock body{overflow:hidden;height:100%}
   z-index:2;
   background:linear-gradient(rgba(0,0,0,.22) 22%,rgba(0,0,0,.95) 80%);
 }
-.cover-content{position:relative;z-index:3;width:100%}
+.cover-content{
+  position:relative;
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  height:100%;
+  padding:15svh 0;
+}
+.cover-top,.cover-bottom{display:flex;flex-direction:column;align-items:center}
+.cover-bottom{margin-top:auto}
 .cover-kicker{
-  margin:0 0 6px;
-  font:300 12px/12px var(--body);
-  letter-spacing:10px;text-transform:none;color:var(--white);
+  margin:0;
+  color:#fff;
+  font:400 14px/1.2 "Poppins",sans-serif;
+  letter-spacing:1px;
 }
 .cover-title{
-  margin:8px 0 10px;
-  font:400 30px/30px var(--ovo);
-  letter-spacing:2px;text-transform:uppercase;
+  margin:10px 0 0;
+  color:#fff;
+  font:600 32px/1.2 "Poppins",sans-serif;
+  letter-spacing:-1px;
   text-shadow:0 8px 16px rgba(0,0,0,.3);
   transform-origin:center center;
   will-change:transform;
 }
-.cover .date{
-  margin:0 0 28px;
-  font:400 14px/14px var(--body);
-  letter-spacing:3px;text-transform:uppercase;
+.cover-date{
+  margin:10px 0 0;
+  color:#fff;
+  font:400 14px/1.3 "Poppins",sans-serif;
+  letter-spacing:1px;
 }
-.guest-card{margin:0 0 22px}
-.guest-card .dear{
+.guest-card{max-width:300px;color:#fff}
+.guest-card > span{
   display:block;
-  font:400 14px/14px var(--body);
-  letter-spacing:3px;text-transform:uppercase;
+  font:400 12px/1.2 "Poppins",sans-serif;
+  letter-spacing:.5px;
 }
 .guest-card .guest-name{
-  display:block;margin-top:4px;
-  font:italic 300 20px/20px var(--italic);
-  letter-spacing:-.5px;
+  display:block;
+  margin-top:10px;
+  font:600 18px/1.2 "Poppins",sans-serif;
+  letter-spacing:1px;
 }
+.guest-card p{
+  margin:14px 0 0;
+  color:#fff;
+  font:400 10px/1.65 "Poppins",sans-serif;
+  letter-spacing:.5px;
+}
+.cover .btn{
+  min-height:44px;
+  margin-top:22px;
+  padding:12px 24px;
+  border:0;
+  border-radius:100px;
+  background:#e9e9e980;
+  color:#fff;
+  font:600 14px/1 "Poppins",sans-serif;
+  letter-spacing:.5px;
+  text-transform:none;
+}
+.cover .btn:hover{background:#e9e9e9ad;color:#fff}
 
 /* ===== QUOTE ===== */
 .quote-section{background:rgba(0,0,0,.95);padding:50px 25px;min-height:auto}
