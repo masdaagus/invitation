@@ -1,16 +1,14 @@
-/* Guest personalization */
-const guest = new URLSearchParams(location.search).get('guest') || new URLSearchParams(location.search).get('kepada') || 'Salindri';
-document.querySelector('#guestName').textContent = guest;
-document.querySelectorAll('[data-guest]').forEach((el) => { el.textContent = guest; });
-document.querySelector('.wish-form input[name="nama"]').value = guest;
+const params = new URLSearchParams(location.search);
+const guest = params.get('guest') || params.get('kepada') || 'Salindri';
+const guestName = document.querySelector('#guestName');
+const rsvpName = document.querySelector('#rsvpForm input[name="nama"]');
 
-/* ===== Cover slideshow — Elementor-like fade + Ken Burns =====
-   slide_duration: 1250ms hold after transition
-   transition_duration: 2250ms fade
-   ken_burns: in, scale 1 → 1.3 over 10s (ref computed transition)
-*/
+if (guestName) guestName.textContent = guest;
+document.querySelectorAll('[data-guest]').forEach((element) => { element.textContent = guest; });
+if (rsvpName) rsvpName.value = guest;
+
 const slides = [...document.querySelectorAll('#coverSlideshow .slide')];
-let slideIdx = 0;
+let slideIndex = 0;
 const SLIDE_HOLD = 1250;
 const SLIDE_FADE = 2250;
 
@@ -23,313 +21,336 @@ function armKen(slide) {
   ken.style.transition = 'transform 10s linear';
   ken.style.transform = 'scale(1.3)';
 }
+
 function nextSlide() {
-  const prev = slides[slideIdx];
-  slideIdx = (slideIdx + 1) % slides.length;
-  const next = slides[slideIdx];
-  prev.classList.remove('active');
+  if (slides.length < 2) return;
+  const previous = slides[slideIndex];
+  slideIndex = (slideIndex + 1) % slides.length;
+  const next = slides[slideIndex];
+  previous.classList.remove('active');
   next.classList.add('active');
   armKen(next);
 }
-// kick first ken
-if (slides[0]) armKen(slides[0]);
-setInterval(nextSlide, SLIDE_HOLD + SLIDE_FADE);
 
-/* ===== Cover title scroll motion FX — scale out-in =====
-   motion_fx_scale_direction: out-in
-   motion_fx_scale_speed: 3
-   range start 20% → end 90% of viewport scroll on cover
-*/
+if (slides[0]) {
+  armKen(slides[0]);
+  window.setInterval(nextSlide, SLIDE_HOLD + SLIDE_FADE);
+}
+
 const coverTitle = document.querySelector('#coverTitle');
 const cover = document.querySelector('#cover');
+
 function updateTitleScale() {
   if (!coverTitle || !cover) return;
   const rect = cover.getBoundingClientRect();
-  const viewH = window.innerHeight || 1;
-  // progress 0 at top of cover fully visible, 1 as cover scrolls out
-  const start = viewH * 0.2;
-  const end = viewH * 0.9;
-  const raw = (start - rect.top) / (end - start);
-  const t = Math.min(1, Math.max(0, raw));
-  // out-in: scale grows as you scroll (like ref ~1.0 → ~1.15+)
-  const scale = 1 + t * 0.18 * 3 / 3; // speed size 3 → mild
-  coverTitle.style.transform = `scale(${scale.toFixed(4)})`;
-  coverTitle.style.transition = 'transform 100ms linear';
+  const viewportHeight = window.innerHeight || 1;
+  const start = viewportHeight * .2;
+  const end = viewportHeight * .9;
+  const progress = Math.min(1, Math.max(0, (start - rect.top) / (end - start)));
+  coverTitle.style.transform = `scale(${(1 + progress * .12).toFixed(4)})`;
 }
+
 window.addEventListener('scroll', updateTitleScale, { passive: true });
 updateTitleScale();
 
-/* ===== Quote carousel — continuous, slides_to_show≈2, speed 2250, autoplay_speed 0 =====
-   delay 0 = advance immediately after transition ends → seamless continuous
-*/
-const track = document.querySelector('#carouselTrack');
-const imgs = track ? [...track.children] : [];
-const realCount = 3; // unique images before duplicate
-let carIdx = 0;
-function slideWidth() {
-  if (!imgs[0]) return 0;
-  return imgs[0].getBoundingClientRect().width;
-}
-function setCarousel(instant) {
-  if (!track) return;
-  const w = slideWidth();
-  track.style.transition = instant ? 'none' : 'transform 2.25s cubic-bezier(0.45, 0, 0.2, 1)';
-  track.style.transform = `translate3d(${-carIdx * w}px,0,0)`;
-}
-function advanceCarousel() {
-  carIdx += 1;
-  setCarousel(false);
-  if (carIdx >= realCount) {
-    // after transition, snap back to clone start
-    setTimeout(() => {
-      carIdx = 0;
-      setCarousel(true);
-    }, 2300);
-  }
-}
-window.addEventListener('resize', () => setCarousel(true));
-setCarousel(true);
-// autoplay_speed 0 + speed 2250 → next starts right after transition
-setInterval(advanceCarousel, 2250);
-
-/* ===== Countdown ===== */
 const eventTime = new Date('2026-10-03T06:30:00+07:00').getTime();
 const countdownBoxes = [...document.querySelectorAll('#countdown strong')];
+
 function updateCountdown() {
   const distance = Math.max(0, eventTime - Date.now());
-  const day = 86400000, hour = 3600000, minute = 60000;
+  const day = 86400000;
+  const hour = 3600000;
+  const minute = 60000;
   const values = [
     Math.floor(distance / day),
     Math.floor(distance % day / hour),
     Math.floor(distance % hour / minute),
-    Math.floor(distance % minute / 1000)
+    Math.floor(distance % minute / 1000),
   ];
-  countdownBoxes.forEach((box, i) => { box.textContent = String(values[i]).padStart(2, '0'); });
+  countdownBoxes.forEach((box, index) => { box.textContent = String(values[index]).padStart(2, '0'); });
 }
+
 updateCountdown();
-setInterval(updateCountdown, 1000);
+window.setInterval(updateCountdown, 1000);
 
-/* ===== Gift toggle ===== */
-const giftToggle = document.querySelector('#giftToggle');
-const giftList = document.querySelector('#giftList');
-giftToggle?.addEventListener('click', () => {
-  giftList.hidden = !giftList.hidden;
-  giftToggle.textContent = giftList.hidden ? 'Lihat Rekening' : 'Sembunyikan Rekening';
-});
-
-/* ===== Toast + copy ===== */
 const toast = document.querySelector('#toast');
+
 function showToast(text) {
+  if (!toast) return;
   toast.textContent = text;
   toast.classList.add('show');
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 2200);
 }
-window.showToast = showToast;
 
-/* ===== RSVP + Wishes (Supabase) =====
-   ponytail: anon key di-fetch dari .env via HTTP — works on static hosting
-   yang serve dotfile (python http.server, dll). Kalau fetch gagal (file://
-   atau host blokir dotfile), RSVP mati diam-diam. Upgrade path: inject key
-   via build/deploy step.
-*/
+const saveDateBtn = document.querySelector('#saveDateBtn');
+saveDateBtn?.addEventListener('click', () => {
+  const calendar = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    'DTSTART:20261003T020000Z',
+    'DTEND:20261003T090000Z',
+    'SUMMARY:Pernikahan Masda & Salindri',
+    'LOCATION:Ds. Wonokupang RT.08/04\\, Balongbendo\\, Sidoarjo',
+    'DESCRIPTION:Pernikahan Masda Agus Ruswoko & Salindri Retno Malini Kusuma Supardi.',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+  const blob = new Blob([calendar], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'pernikahan-masda-salindri.ics';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  showToast('File kalender berhasil diunduh');
+});
+
+const giftToggle = document.querySelector('#giftToggle');
+const giftList = document.querySelector('#giftList');
+
+giftToggle?.setAttribute('aria-expanded', String(!giftList?.hidden));
+giftToggle?.addEventListener('click', () => {
+  if (!giftList) return;
+  giftList.hidden = !giftList.hidden;
+  giftToggle.textContent = giftList.hidden ? 'LIHAT REKENING' : 'SEMBUNYIKAN REKENING';
+  giftToggle.setAttribute('aria-expanded', String(!giftList.hidden));
+});
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const field = document.createElement('textarea');
+  field.value = text;
+  field.setAttribute('readonly', '');
+  field.style.position = 'fixed';
+  field.style.opacity = '0';
+  document.body.append(field);
+  field.select();
+  const copied = document.execCommand('copy');
+  field.remove();
+  if (!copied) throw new Error('Clipboard tidak tersedia');
+}
+
+document.querySelectorAll('[data-copy]').forEach((button) => {
+  button.addEventListener('click', async () => {
+    try {
+      await copyText(button.dataset.copy || '');
+      showToast('Nomor rekening disalin');
+    } catch {
+      showToast('Gagal menyalin nomor rekening');
+    }
+  });
+});
+
 const wishList = document.querySelector('#wishList');
 const rsvpForm = document.querySelector('#rsvpForm');
 let supabaseClient = null;
 
 function addWishItem({ nama, ucapan }) {
-  const item = document.createElement('div');
+  if (!wishList || !nama || !ucapan) return;
+  const item = document.createElement('article');
+  const name = document.createElement('strong');
+  const message = document.createElement('span');
   item.className = 'wish-item';
-  const strong = document.createElement('strong');
-  strong.textContent = nama;
-  const span = document.createElement('span');
-  span.textContent = ucapan;
-  item.append(strong, span);
+  name.textContent = nama;
+  message.textContent = ucapan;
+  item.append(name, message);
   wishList.prepend(item);
   while (wishList.children.length > 6) wishList.lastChild.remove();
 }
 
 async function initRsvp() {
+  if (!window.supabase?.createClient) return;
+  supabaseClient = window.supabase.createClient(
+    'https://xsabqeuxmokwcthokfwz.supabase.co',
+    'sb_publishable_WAm14zb2mQyOFxjAijqYDg_C_xP9-Lf',
+  );
   try {
-    const env = Object.fromEntries(
-      (await (await fetch('.env')).text()).split('\n')
-        .filter((line) => line.includes('='))
-        .map((line) => line.split('=').map((s) => s.trim()))
-    );
-    // if (!env.SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY.includes('tempel')) return;
-    supabaseClient = supabase.createClient("https://xsabqeuxmokwcthokfwz.supabase.co", "sb_publishable_WAm14zb2mQyOFxjAijqYDg_C_xP9-Lf");
-
     const { data, error } = await supabaseClient
       .from('rsvp')
       .select('nama, ucapan')
       .order('created_at', { ascending: false })
       .limit(6);
     if (error) throw error;
-    data.reverse().forEach(addWishItem);
+    [...data].reverse().forEach(addWishItem);
   } catch {
-    /* .env tidak terjangkau atau Supabase down — biarkan form tanpa storage */
+    supabaseClient = null;
   }
 }
 
-rsvpForm.addEventListener('submit', async (event) => {
+rsvpForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
+  const nama = rsvpForm.nama.value.trim();
+  const ucapan = rsvpForm.ucapan.value.trim();
+  const kehadiran = new FormData(rsvpForm).get('kehadiran');
+  if (!nama || !ucapan || !['Hadir', 'Tidak hadir'].includes(kehadiran)) {
+    showToast('Lengkapi nama, kehadiran, dan ucapan');
+    return;
+  }
+  if (nama.length > 100 || ucapan.length > 500) {
+    showToast('Isian melebihi batas karakter');
+    return;
+  }
   if (!supabaseClient) {
     showToast('RSVP belum aktif');
     return;
   }
-  const row = {
-    nama: rsvpForm.nama.value.trim(),
-    ucapan: rsvpForm.ucapan.value.trim(),
-    kehadiran: rsvpForm.kehadiran.value,
-  };
-  const button = rsvpForm.querySelector('button');
+  const button = rsvpForm.querySelector('button[type="submit"]');
   button.disabled = true;
-  const { error } = await supabaseClient.from('rsvp').insert(row);
-  button.disabled = false;
-  if (error) {
-    showToast('Gagal menyimpan, coba lagi');
-    return;
+  try {
+    const { error } = await supabaseClient.from('rsvp').insert({ nama, ucapan, kehadiran });
+    if (error) throw error;
+    addWishItem({ nama, ucapan });
+    rsvpForm.ucapan.value = '';
+    showToast('Terima kasih atas konfirmasinya');
+  } catch {
+    showToast('Gagal menyimpan RSVP, coba lagi');
+  } finally {
+    button.disabled = false;
   }
-  addWishItem(row);
-  rsvpForm.ucapan.value = '';
-  showToast('Terima kasih atas konfirmasinya');
 });
 
 initRsvp();
-document.querySelectorAll('[data-copy]').forEach((button) => {
-  button.addEventListener('click', async () => {
-    await navigator.clipboard.writeText(button.dataset.copy);
-    showToast('Nomor rekening disalin');
-  });
-});
-
-/* ===== Background music — mulai hanya via LET'S ROLL =====
-   Autoplay audio diblokir Chrome/Safari/iOS, jadi lagu hanya mulai
-   dari gestur user: klik LET'S ROLL (unlock). Loop terus; floating
-   button kanan-bawah untuk pause/resume setelah masuk.
-*/
-const bgMusic = document.querySelector('#bgMusic');
-const musicToggle = document.querySelector('#musicToggle');
-
-function startMusic() {
-  musicToggle.hidden = false;
-  if (!bgMusic) return;
-  bgMusic.volume = 0.6;
-  const tryPlay = () => {
-    bgMusic.play().then(() => {
-      musicToggle.setAttribute('aria-pressed', 'true');
-      musicToggle.setAttribute('aria-label', 'Jeda musik latar');
-    }).catch(() => { /* blokir sementara — biar tombol yang mulai */ });
-  };
-  tryPlay();
-  bgMusic.addEventListener('pause', () => {
-    musicToggle.setAttribute('aria-pressed', 'false');
-    musicToggle.setAttribute('aria-label', 'Putar musik latar');
-  });
-  musicToggle.addEventListener('click', () => {
-    if (bgMusic.paused) tryPlay();
-    else bgMusic.pause();
-  });
-}
-
-/* ===== Cover gate — scroll & musik terkunci sampai LET'S ROLL =====
-   html.lock dipasang saat load: wheel/touch/keyboard navigasi di-jepit.
-   Klik #rollBtn → unlock(): hapus lock, smooth-scroll ke #opening,
-   lalu startMusic(). Satu-satunya pintu masuk musik.
-*/
-const rootEl = document.documentElement;
-const rollBtn = document.querySelector('#rollBtn');
-const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar']);
-
-rootEl.classList.add('lock');
-window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-
-function onWheel(e) { e.preventDefault(); }
-function onTouchMove(e) { e.preventDefault(); }
-function onKeyScroll(e) {
-  if (e.target.closest && e.target.closest('#rollBtn')) return;
-  if (SCROLL_KEYS.has(e.key)) e.preventDefault();
-}
-
-window.addEventListener('wheel', onWheel, { passive: false });
-window.addEventListener('touchmove', onTouchMove, { passive: false });
-window.addEventListener('keydown', onKeyScroll);
-
-function unlock() {
-  if (!rootEl.classList.contains('lock')) return;
-  rootEl.classList.remove('lock');
-  window.removeEventListener('wheel', onWheel);
-  window.removeEventListener('touchmove', onTouchMove);
-  window.removeEventListener('keydown', onKeyScroll);
-  document.querySelector('#opening').scrollIntoView({ behavior: 'smooth' });
-  startMusic();
-}
-
-rollBtn?.addEventListener('click', (event) => {
-  event.preventDefault();
-  unlock();
-});
-
-
-/* ===== Gallery 9:16 grid ===== */
 
 const gallery = [
-  'CSA_5462', 'CSA_5474',
-  'CSA_5503', 'CSA_5468', 
-  'CSA_5539', 'CSA_5554', 
-  'CSA_5725', 'CSA_5575', 
-  'CSA_5587', 'CSA_5716',
-  'CSA_5679', 'CSA_5672',
-  'CSA_5643', 'CSA_5646',
-  // 'CSA_5734', 'CSA_5646',
-  // 'CSA_5554', 'CSA_5575',
-  // 'CSA_5646', 'CSA_5672',
+  'CSA_5462', 'CSA_5474', 'CSA_5503', 'CSA_5468', 'CSA_5539', 'CSA_5554', 'CSA_5725',
+  'CSA_5575', 'CSA_5587', 'CSA_5716', 'CSA_5679', 'CSA_5672', 'CSA_5643', 'CSA_5646',
 ].map((name) => `assets/photos/${name}.webp`);
 const galleryGrid = document.querySelector('#galleryGrid');
 const lightbox = document.querySelector('#lightbox');
-const lightboxImage = lightbox.querySelector('img');
+const lightboxImage = lightbox?.querySelector('img');
 const lightboxCounter = document.querySelector('#lightboxCounter');
 let currentIndex = 0;
+
 function showSlide(index) {
+  if (!lightboxImage || !lightboxCounter) return;
   currentIndex = (index + gallery.length) % gallery.length;
   lightboxImage.src = gallery[currentIndex];
   lightboxCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
 }
-gallery.forEach((src, index) => {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'anim zoom-in slow';
-  button.innerHTML = `<img src="${src}" alt="Gallery ${index + 1}" loading="lazy">`;
-  button.addEventListener('click', () => {
-    showSlide(index);
-    lightbox.showModal();
-    new Image().src = gallery[(index + 1) % gallery.length];
+
+if (galleryGrid && lightbox) {
+  gallery.forEach((source, index) => {
+    const button = document.createElement('button');
+    const image = document.createElement('img');
+    button.type = 'button';
+    button.className = 'anim zoom-in slow';
+    image.src = source;
+    image.alt = `Foto galeri ${index + 1}`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    button.append(image);
+    button.addEventListener('click', () => {
+      showSlide(index);
+      lightbox.showModal();
+      new Image().src = gallery[(index + 1) % gallery.length];
+    });
+    galleryGrid.append(button);
   });
-  galleryGrid.append(button);
-});
-document.querySelector('#closeLightbox').addEventListener('click', () => lightbox.close());
-document.querySelector('#prevLightbox').addEventListener('click', () => showSlide(currentIndex - 1));
-document.querySelector('#nextLightbox').addEventListener('click', () => showSlide(currentIndex + 1));
-lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
-lightbox.addEventListener('keydown', (event) => {
+}
+
+document.querySelector('#closeLightbox')?.addEventListener('click', () => lightbox?.close());
+document.querySelector('#prevLightbox')?.addEventListener('click', () => showSlide(currentIndex - 1));
+document.querySelector('#nextLightbox')?.addEventListener('click', () => showSlide(currentIndex + 1));
+lightbox?.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
+lightbox?.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowLeft') showSlide(currentIndex - 1);
   if (event.key === 'ArrowRight') showSlide(currentIndex + 1);
 });
 
-/* ===== Entrance animations — WeddingPress wdpal style =====
-   class .anim + direction; add .active on intersect
-*/
-const animObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) return;
-    entry.target.classList.add('active');
-    animObserver.unobserve(entry.target);
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+const bgMusic = document.querySelector('#bgMusic');
+const musicToggle = document.querySelector('#musicToggle');
+let musicInitialized = false;
 
-document.querySelectorAll('.anim').forEach((el) => animObserver.observe(el));
+function setMusicState(isPlaying) {
+  if (!musicToggle) return;
+  musicToggle.setAttribute('aria-pressed', String(isPlaying));
+  musicToggle.setAttribute('aria-label', isPlaying ? 'Jeda musik latar' : 'Putar musik latar');
+}
 
-/* Activate cover anims on load (stagger via CSS delay) */
+function playMusic() {
+  if (!bgMusic) return;
+  bgMusic.play().then(() => setMusicState(true)).catch(() => setMusicState(false));
+}
+
+function startMusic() {
+  if (!bgMusic || !musicToggle) return;
+  musicToggle.hidden = false;
+  if (!musicInitialized) {
+    musicInitialized = true;
+    bgMusic.volume = .6;
+    bgMusic.addEventListener('pause', () => setMusicState(false));
+    bgMusic.addEventListener('play', () => setMusicState(true));
+    musicToggle.addEventListener('click', () => {
+      if (bgMusic.paused) playMusic();
+      else bgMusic.pause();
+    });
+  }
+  playMusic();
+}
+
+const root = document.documentElement;
+const rollBtn = document.querySelector('#rollBtn');
+const opening = document.querySelector('#opening');
+const siteNav = document.querySelector('#siteNav');
+const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar']);
+
+function preventWheel(event) { event.preventDefault(); }
+function preventTouchMove(event) { event.preventDefault(); }
+function preventKeyScroll(event) {
+  if (event.target.closest?.('#rollBtn')) return;
+  if (scrollKeys.has(event.key)) event.preventDefault();
+}
+
+function lockInvitation() {
+  root.classList.add('lock');
+  window.scrollTo(0, 0);
+  window.addEventListener('wheel', preventWheel, { passive: false });
+  window.addEventListener('touchmove', preventTouchMove, { passive: false });
+  window.addEventListener('keydown', preventKeyScroll);
+}
+
+function unlockInvitation() {
+  if (!root.classList.contains('lock')) return;
+  root.classList.remove('lock');
+  window.removeEventListener('wheel', preventWheel);
+  window.removeEventListener('touchmove', preventTouchMove);
+  window.removeEventListener('keydown', preventKeyScroll);
+  if (siteNav) siteNav.hidden = false;
+  startMusic();
+  opening?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+lockInvitation();
+rollBtn?.addEventListener('click', (event) => {
+  event.preventDefault();
+  unlockInvitation();
+});
+
+const requiredHooks = ['cover', 'coverSlideshow', 'coverTitle', 'rollBtn', 'opening', 'countdown', 'galleryGrid', 'giftToggle', 'giftList', 'rsvpForm', 'wishList', 'lightbox', 'toast', 'musicToggle', 'bgMusic'];
+console.assert(requiredHooks.every((id) => document.getElementById(id)), 'Invitation markup hooks missing');
+
+const animationTargets = () => document.querySelectorAll('.anim');
+
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('active');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: .12, rootMargin: '0px 0px -7% 0px' });
+  animationTargets().forEach((element) => observer.observe(element));
+} else {
+  animationTargets().forEach((element) => element.classList.add('active'));
+}
+
 requestAnimationFrame(() => {
-  document.querySelectorAll('.cover .anim').forEach((el) => el.classList.add('active'));
+  document.querySelectorAll('.cover .anim').forEach((element) => element.classList.add('active'));
 });
