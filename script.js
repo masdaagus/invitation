@@ -1,5 +1,7 @@
 /* Guest personalization */
-const guest = new URLSearchParams(location.search).get('guest') || new URLSearchParams(location.search).get('kepada') || 'Salindri';
+const guest = new URLSearchParams(location.search).get('guest') || new URLSearchParams(location.search).get('kepada') || '';
+const guestLabel = document.querySelector('.guest-card > span');
+guestLabel.style.display = guest.trim() ? '' : 'none';
 document.querySelector('#guestName').textContent = guest;
 document.querySelectorAll('[data-guest]').forEach((el) => { el.textContent = guest; });
 document.querySelector('.wish-form input[name="nama"]').value = guest;
