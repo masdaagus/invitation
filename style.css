@@ -372,6 +372,14 @@ html.lock,html.lock body{overflow:hidden;height:100%}
 }
 .wish-item strong{display:block;margin-bottom:4px;font:400 15px var(--ovo)}
 .wish-item span{font:300 13px/1.5 var(--body);opacity:.9}
+.wish-pagination{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:4px}
+.wish-page-numbers{display:flex;gap:4px}
+.wish-page{
+  min-width:34px;padding:7px 9px;border:1px solid rgba(255,255,255,.35);border-radius:6px;
+  background:transparent;color:var(--white);font:300 12px var(--body);cursor:pointer;
+}
+.wish-page:hover:not(:disabled),.wish-page.active{background:rgba(255,255,255,.18);border-color:var(--white)}
+.wish-page:disabled{cursor:not-allowed;opacity:.4}
 
 /* ===== CLOSING — #000000E6 + photo ===== */
 .closing{

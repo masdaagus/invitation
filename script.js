@@ -136,10 +136,15 @@ window.showToast = showToast;
    via build/deploy step.
 */
 const wishList = document.querySelector('#wishList');
+const wishPagination = document.querySelector('#wishPagination');
+const wishPageNumbers = document.querySelector('#wishPageNumbers');
 const rsvpForm = document.querySelector('#rsvpForm');
+const wishesPerPage = 6;
+let wishes = [];
+let currentWishPage = 1;
 let supabaseClient = null;
 
-function addWishItem({ nama, ucapan }) {
+function renderWishItem({ nama, ucapan }) {
   const item = document.createElement('div');
   item.className = 'wish-item';
   const strong = document.createElement('strong');
@@ -147,8 +152,41 @@ function addWishItem({ nama, ucapan }) {
   const span = document.createElement('span');
   span.textContent = ucapan;
   item.append(strong, span);
-  wishList.prepend(item);
-  while (wishList.children.length > 6) wishList.lastChild.remove();
+  wishList.append(item);
+}
+
+function renderWishPagination(totalPages) {
+  wishPageNumbers.replaceChildren();
+  for (let page = 1; page <= totalPages; page += 1) {
+    const button = document.createElement('button');
+    button.className = 'wish-page';
+    button.type = 'button';
+    button.textContent = page;
+    button.dataset.page = page;
+    button.setAttribute('aria-label', `Halaman ${page}`);
+    if (page === currentWishPage) {
+      button.classList.add('active');
+      button.setAttribute('aria-current', 'page');
+    }
+    wishPageNumbers.append(button);
+  }
+}
+
+function renderWishes() {
+  const totalPages = Math.max(1, Math.ceil(wishes.length / wishesPerPage));
+  currentWishPage = Math.min(currentWishPage, totalPages);
+  const start = (currentWishPage - 1) * wishesPerPage;
+  wishList.replaceChildren();
+  wishes.slice(start, start + wishesPerPage).forEach(renderWishItem);
+  renderWishPagination(totalPages);
+  wishPagination.querySelector('[data-page-action="previous"]').disabled = currentWishPage === 1;
+  wishPagination.querySelector('[data-page-action="next"]').disabled = currentWishPage === totalPages;
+}
+
+function addWishItem(wish) {
+  wishes.unshift(wish);
+  currentWishPage = 1;
+  renderWishes();
 }
 
 async function initRsvp() {
@@ -164,14 +202,25 @@ async function initRsvp() {
     const { data, error } = await supabaseClient
       .from('rsvp')
       .select('nama, ucapan')
-      .order('created_at', { ascending: false })
-      .limit(6);
+      .order('created_at', { ascending: false });
     if (error) throw error;
-    data.reverse().forEach(addWishItem);
+    wishes = data;
+    renderWishes();
   } catch {
     /* .env tidak terjangkau atau Supabase down — biarkan form tanpa storage */
   }
 }
+
+wishPagination.addEventListener('click', (event) => {
+  const button = event.target.closest('button');
+  if (!button || button.disabled) return;
+  if (button.dataset.page) currentWishPage = Number(button.dataset.page);
+  if (button.dataset.pageAction === 'previous') currentWishPage -= 1;
+  if (button.dataset.pageAction === 'next') currentWishPage += 1;
+  renderWishes();
+});
+
+renderWishes();
 
 rsvpForm.addEventListener('submit', async (event) => {
   event.preventDefault();

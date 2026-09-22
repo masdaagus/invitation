@@ -19,7 +19,7 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400&family=Ovo&family=Poltawski+Nowy:ital,wght@1,300&family=Poppins:wght@400;600&family=Public+Sans:wght@300;400&display=swap"
     rel="stylesheet">
   <link rel="preload" as="image" href="assets/photos/CSA_5451.webp">
-  <link rel="stylesheet" href="style.css?v=69c9e31xxasd">
+  <link rel="stylesheet" href="style.css?v=69c9e31xxasdpagination">
 </head>
 
 <body>
@@ -276,6 +276,11 @@
         <button class="btn" type="submit">KIRIM</button>
       </form>
       <div class="wish-list anim muncul-atas slow" id="wishList"></div>
+      <nav class="wish-pagination" id="wishPagination" aria-label="Halaman ucapan">
+        <button class="wish-page" type="button" data-page-action="previous"><span aria-hidden="true">←</span> Previous</button>
+        <div class="wish-page-numbers" id="wishPageNumbers"></div>
+        <button class="wish-page" type="button" data-page-action="next">Next <span aria-hidden="true">→</span></button>
+      </nav>
     </section>
 
     <!-- CLOSING -->
@@ -304,7 +309,7 @@
     loop></audio>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js?v=69c9e18xxasd1"></script>
+  <script src="script.js?v=69c9e18xxasd1pagination"></script>
 </body>
 
 </html>
